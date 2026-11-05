@@ -14,29 +14,18 @@ A dashboard widget and system alert for the health of your firewall's drives (NV
 
 ## Install
 
-The plugin is distributed as a regular FreeBSD package from a package repository hosted on GitHub Pages. Run on the firewall (SSH or *System ▸ Firmware ▸ Console*, as root):
+This plugin is not in the official OPNsense plugin list, so it is installed from its own signed package repository. Run these commands once on the firewall as root (SSH, or *System ▸ Firmware ▸ Console*):
 
 ```sh
-# 1. Trust the repository signing key
 mkdir -p /usr/local/etc/pkg/keys
 fetch -o /usr/local/etc/pkg/keys/diskhealth.pub \
     https://priestjim.github.io/opnsense-os-diskhealth/repo.pub
-
-# 2. Add the repository
-cat > /usr/local/etc/pkg/repos/diskhealth.conf << 'EOF'
-diskhealth: {
-  url: "https://priestjim.github.io/opnsense-os-diskhealth/repo",
-  signature_type: "pubkey",
-  pubkey: "/usr/local/etc/pkg/keys/diskhealth.pub",
-  priority: 5,
-  enabled: yes
-}
-EOF
-
-# 3. Install
+fetch -o /usr/local/etc/pkg/repos/diskhealth.conf \
+    https://priestjim.github.io/opnsense-os-diskhealth/diskhealth.conf
 pkg update
-pkg install os-diskhealth
 ```
+
+Then install **os-diskhealth** from *System ▸ Firmware ▸ Plugins* (reload the page if it is not listed), or from the shell with `pkg install os-diskhealth`. Updates are offered with the normal firmware updates.
 
 `os-smart` (which brings in `smartmontools`) is a dependency: it is installed automatically from the OPNsense repository. If it cannot be installed, the installation fails and nothing is changed.
 

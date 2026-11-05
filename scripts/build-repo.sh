@@ -30,7 +30,11 @@
 #
 # With a key the repository is signed and the public key is written to
 # <repo-dir>/../repo.pub for users to import; without one it can only be used with signature_type "none".
+# Next to the repository the ready-made pkg repository definition <repo-dir>/../diskhealth.conf is written, which
+# users download into /usr/local/etc/pkg/repos/. PAGES_URL is the base URL the site is served from.
 set -eu
+
+PAGES_URL=${PAGES_URL:-https://priestjim.github.io/opnsense-os-diskhealth}
 
 PKGS=$1
 REPO=$2
@@ -42,7 +46,18 @@ cp "$PKGS"/*.pkg "$REPO/All/"
 if [ -n "$KEY" ]; then
     pkg repo "$REPO" "$KEY"
     openssl rsa -in "$KEY" -pubout -out "$REPO/../repo.pub" 2> /dev/null
+    SECURITY='signature_type: "pubkey",
+  pubkey: "/usr/local/etc/pkg/keys/diskhealth.pub",'
 else
     pkg repo "$REPO"
+    SECURITY='signature_type: "none",'
 fi
+cat > "$REPO/../diskhealth.conf" << EOF
+diskhealth: {
+  url: "$PAGES_URL/repo",
+  $SECURITY
+  priority: 5,
+  enabled: yes
+}
+EOF
 ls -lR "$REPO"

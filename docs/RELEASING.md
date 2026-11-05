@@ -15,7 +15,7 @@ Releases are built by `.github/workflows/release.yml` when a `v*` tag is pushed.
    Store `repo.key` somewhere safe (password manager); losing it means users must re-trust a new key. Without the secret the workflow still runs but publishes an **unsigned** repository (users would have to use `signature_type: "none"`), and prints a warning.
 3. Optionally protect the `v*` tag pattern and the `github-pages` environment so only maintainers can release.
 
-The workflow publishes, next to the repository, `repo.pub`, the public key that users download in the README install steps (`signature_type: "pubkey"`).
+The workflow publishes, next to the repository, `repo.pub` (the public key) and `diskhealth.conf` (the ready-made pkg repository definition, pointing at the Pages URL of the repository and at the key). Users download both in the README install steps. If the key changes, `repo.pub` changes and users fetch it again.
 
 ## Cutting a release
 
