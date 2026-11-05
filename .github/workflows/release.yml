@@ -1,0 +1,100 @@
+name: Release
+
+# Pushing a tag such as v1.0.0 builds the package, attaches it to a GitHub
+# release and republishes the pkg repository (all released versions) on GitHub
+# Pages. See docs/RELEASING.md for the one-time setup.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v7
+        with:
+          repository: opnsense/plugins
+          path: opnsense-plugins
+          sparse-checkout: |
+            Mk
+            Templates
+            Scripts
+      - name: Tag matches the plugin version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version=$(sed -n 's/^PLUGIN_VERSION=[[:space:]]*//p' Makefile)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match PLUGIN_VERSION $version in Makefile"
+            exit 1
+          fi
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Run tests
+        run: npm test
+
+      - name: Collect previously released packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p package-out
+          gh release download --pattern 'os-diskhealth-*.pkg' --dir package-out || true
+
+      - name: Write signing key
+        env:
+          PKG_SIGNING_KEY: ${{ secrets.PKG_SIGNING_KEY }}
+        run: |
+          if [ -n "$PKG_SIGNING_KEY" ]; then
+            umask 077
+            printf '%s\n' "$PKG_SIGNING_KEY" > repo.key
+          else
+            echo "::warning::PKG_SIGNING_KEY is not set, publishing an unsigned repository"
+          fi
+
+      - name: Build package and repository on FreeBSD
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "15"
+          run: |
+            scripts/build-package.sh opnsense-plugins package-out
+            if [ -f repo.key ]; then
+              scripts/build-repo.sh package-out site/repo repo.key
+            else
+              scripts/build-repo.sh package-out site/repo
+            fi
+
+      - name: Create the GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "package-out/os-diskhealth-${GITHUB_REF_NAME#v}"*.pkg \
+            --title "$GITHUB_REF_NAME" --generate-notes
+
+      - name: Remove the private key from the workspace
+        if: always()
+        run: rm -f repo.key
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v5

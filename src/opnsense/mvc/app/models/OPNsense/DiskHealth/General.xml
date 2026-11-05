@@ -1,0 +1,93 @@
+<model>
+    <mount>//OPNsense/DiskHealth</mount>
+    <description>Disk Health configuration</description>
+    <version>1.0.0</version>
+    <items>
+        <enabled type="BooleanField">
+            <Default>1</Default>
+            <Required>Y</Required>
+        </enabled>
+        <interval type="IntegerField">
+            <Default>5</Default>
+            <Required>Y</Required>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>30</MaximumValue>
+            <ValidationMessage>Please provide an interval between 1 and 30 minutes.</ValidationMessage>
+        </interval>
+        <alert_warnings type="BooleanField">
+            <Default>1</Default>
+            <Required>Y</Required>
+        </alert_warnings>
+        <temp_alerts type="BooleanField">
+            <Default>1</Default>
+            <Required>Y</Required>
+        </temp_alerts>
+        <temp_unit type="OptionField">
+            <Default>C</Default>
+            <Required>Y</Required>
+            <OptionValues>
+                <C>Celsius (°C)</C>
+                <F>Fahrenheit (°F)</F>
+            </OptionValues>
+        </temp_unit>
+        <warning_temp type="IntegerField">
+            <Default>60</Default>
+            <Required>Y</Required>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>400</MaximumValue>
+            <ValidationMessage>Please provide a temperature between 1 and 400.</ValidationMessage>
+        </warning_temp>
+        <critical_temp type="IntegerField">
+            <Default>80</Default>
+            <Required>Y</Required>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>400</MaximumValue>
+            <ValidationMessage>Please provide a temperature between 1 and 400.</ValidationMessage>
+            <Constraints>
+                <check001>
+                    <ValidationMessage>The critical temperature must be higher than the warning temperature.</ValidationMessage>
+                    <type>ComparedToFieldConstraint</type>
+                    <field>warning_temp</field>
+                    <operator>gt</operator>
+                </check001>
+            </Constraints>
+        </critical_temp>
+        <disks>
+            <disk type="ArrayField">
+                <enabled type="BooleanField">
+                    <Default>1</Default>
+                    <Required>Y</Required>
+                </enabled>
+                <device type="TextField">
+                    <Required>Y</Required>
+                    <Mask>/^[a-z]+[0-9]+$/</Mask>
+                    <ValidationMessage>Please provide a device name such as ada0, da1 or nvme0.</ValidationMessage>
+                    <Constraints>
+                        <check001>
+                            <ValidationMessage>This disk is already listed.</ValidationMessage>
+                            <type>UniqueConstraint</type>
+                        </check001>
+                    </Constraints>
+                </device>
+                <warning_temp type="IntegerField">
+                    <MinimumValue>1</MinimumValue>
+                    <MaximumValue>400</MaximumValue>
+                    <ValidationMessage>Please provide a temperature between 1 and 400 or leave empty.</ValidationMessage>
+                </warning_temp>
+                <critical_temp type="IntegerField">
+                    <MinimumValue>1</MinimumValue>
+                    <MaximumValue>400</MaximumValue>
+                    <ValidationMessage>Please provide a temperature between 1 and 400 or leave empty.</ValidationMessage>
+                    <Constraints>
+                        <check001>
+                            <ValidationMessage>The critical temperature must be higher than the warning temperature.</ValidationMessage>
+                            <type>ComparedToFieldConstraint</type>
+                            <field>warning_temp</field>
+                            <operator>gt</operator>
+                        </check001>
+                    </Constraints>
+                </critical_temp>
+            </disk>
+        </disks>
+    </items>
+</model>

@@ -1,0 +1,28 @@
+# Dependencies / build output
+node_modules/
+npm-debug.log*
+
+# Editor and OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Scratch files
+*.tmp
+*.log
+
+# Claude Code local settings
+.claude/settings.local.json
+CLAUDE.md
+AGENTS.md
+
+# Python bytecode (must never end up under src/, it would be packaged)
+__pycache__/
+*.pyc
+
+# Build and release output
+work/
+package-out/
+site/
+repo.key

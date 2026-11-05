@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  javascript:
+    name: Widget tests (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm run test:js
+
+  python:
+    name: Collector tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # OPNsense 26.7 ships Python 3.13
+        python-version: ["3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: npm run test:py
+
+  php:
+    name: PHP syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@2.40.0
+        with:
+          php-version: "8.5"
+      - name: Lint every PHP file
+        run: find src -name '*.php' -o -name '*.inc' | xargs -n1 php -l
+
+  validate:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install xmllint
+        run: sudo apt update && sudo apt install -y libxml2-utils
+      - name: XML is well-formed
+        run: find src -name '*.xml' | xargs xmllint --noout
+      - name: Fixtures are valid JSON
+        run: for f in tests/fixtures/*.json; do python3 -m json.tool "$f" > /dev/null || exit 1; done
+      - name: Shell scripts have valid syntax
+        run: for f in scripts/*.sh install.sh; do sh -n "$f" || exit 1; done
+      - name: Widget parses as an ES module
+        run: node --check --input-type=module < src/opnsense/www/js/widgets/DiskHealth.js
+      - name: Python compiles
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -c 'import sys; [compile(open(f).read(), f, "exec") for f in sys.argv[1:]]' src/opnsense/scripts/OPNsense/DiskHealth/*.py
+      - name: Every source file carries the BSD-2-Clause header
+        run: |
+          missing=$(grep -rL "Redistribution and use in source and binary forms" \
+            $(find src -type f ! -name '*.pyc' ! -name '*.xml' ! -name '*.conf' ! -name '+TARGETS'))
+          if [ -n "$missing" ]; then echo "Missing license header:"; echo "$missing"; exit 1; fi
+      - name: Plugin metadata is complete
+        run: |
+          for f in Makefile pkg-descr LICENSE; do test -s "$f" || { echo "missing $f"; exit 1; }; done
+
+  package:
+    name: Build package (FreeBSD)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v7
+        with:
+          repository: opnsense/plugins
+          path: opnsense-plugins
+          sparse-checkout: |
+            Mk
+            Templates
+            Scripts
+      - name: Build and inspect on FreeBSD
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "15"
+          run: |
+            scripts/build-package.sh opnsense-plugins package-out
+            pkg info -F package-out/os-diskhealth-*.pkg
+            pkg info -d -F package-out/os-diskhealth-*.pkg | grep -q os-smart
+            pkg info -l -F package-out/os-diskhealth-*.pkg
+      - uses: actions/upload-artifact@v7
+        with:
+          name: os-diskhealth-pkg
+          path: package-out/*.pkg

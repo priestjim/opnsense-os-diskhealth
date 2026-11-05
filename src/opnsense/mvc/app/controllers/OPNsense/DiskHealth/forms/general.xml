@@ -1,0 +1,44 @@
+<form>
+  <field>
+    <id>general.enabled</id>
+    <label>Enabled</label>
+    <type>checkbox</type>
+    <help>Collect SMART data in the background. Required for the dashboard widget and for disk alerts.</help>
+  </field>
+  <field>
+    <id>general.interval</id>
+    <label>Collection interval (minutes)</label>
+    <type>text</type>
+    <help>How often the disks are queried, 1 to 30 minutes. Values that divide 60 (1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30) run at an even pace. Sleeping hard disks are never woken up.</help>
+  </field>
+  <field>
+    <id>general.alert_warnings</id>
+    <label>Alert on warnings</label>
+    <type>checkbox</type>
+    <help>Raise the system status alert for early warning signs too (reallocated or pending sectors, CRC errors, endurance almost used). When unchecked, only failing disks (and critical temperatures) raise an alert. The widget always shows both.</help>
+  </field>
+  <field>
+    <id>general.temp_alerts</id>
+    <label>Alert on temperature</label>
+    <type>checkbox</type>
+    <help>Raise a system status alert and a syslog message when a monitored disk reaches its warning or critical temperature. Warning temperatures only alert when "Alert on warnings" is checked too. Temperature never changes a disk's health status.</help>
+  </field>
+  <field>
+    <id>general.temp_unit</id>
+    <label>Temperature unit</label>
+    <type>dropdown</type>
+    <help>Unit used by the Disk Health dashboard widget. Changing it converts the limits below.</help>
+  </field>
+  <field>
+    <id>general.warning_temp</id>
+    <label>Warning temperature</label>
+    <type>text</type>
+    <help>The temperature bar turns amber and the warning alert is raised from this value, in the unit selected above (default 60 °C / 140 °F). Applies to every disk without its own limit below.</help>
+  </field>
+  <field>
+    <id>general.critical_temp</id>
+    <label>Critical temperature</label>
+    <type>text</type>
+    <help>The temperature bar turns red and the critical alert is raised from this value, in the unit selected above, and must be higher than the warning temperature (default 80 °C / 176 °F). Applies to every disk without its own limit below.</help>
+  </field>
+</form>

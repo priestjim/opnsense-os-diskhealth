@@ -1,0 +1,36 @@
+<form>
+  <field>
+    <id>disk.enabled</id>
+    <label>Monitor</label>
+    <type>checkbox</type>
+    <help>Monitor this disk. Only listed and enabled disks are monitored.</help>
+    <grid_view>
+      <type>boolean</type>
+      <formatter>rowtoggle</formatter>
+    </grid_view>
+  </field>
+  <field>
+    <id>disk.device</id>
+    <label>Disk</label>
+    <type>text</type>
+    <help>Pick a detected disk from the list below the field or type the device name as the system names it, for example ada0, da1 or nvme0. NVMe drives are named nvmeX, not ndaX. Renaming a device (for example after replacing a disk) means selecting it again.</help>
+  </field>
+  <field>
+    <id>disk.warning_temp</id>
+    <label>Warning temperature</label>
+    <type>text</type>
+    <help>Overrides the global warning temperature for this disk, in the saved temperature unit. Leave empty to use the global value.</help>
+    <grid_view>
+      <label>Warning</label>
+    </grid_view>
+  </field>
+  <field>
+    <id>disk.critical_temp</id>
+    <label>Critical temperature</label>
+    <type>text</type>
+    <help>Overrides the global critical temperature for this disk, in the saved temperature unit. Leave empty to use the global value. Must be higher than the warning temperature.</help>
+    <grid_view>
+      <label>Critical</label>
+    </grid_view>
+  </field>
+</form>

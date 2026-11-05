@@ -1,0 +1,8 @@
+echo "Registering the plugin with the firmware page"
+/usr/local/opnsense/scripts/firmware/register.php install os-diskhealth || true
+echo "Rendering the disk health configuration"
+/usr/local/sbin/configctl -d template reload OPNsense/DiskHealth || true
+echo "Collecting initial disk health data"
+/usr/local/sbin/configctl -d diskhealth collect || true
+echo "Registering the disk health cron job"
+/usr/local/sbin/configctl -d cron restart || true

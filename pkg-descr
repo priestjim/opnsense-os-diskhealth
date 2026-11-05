@@ -1,0 +1,25 @@
+Monitors the health of the firewall's drives (NVMe, SATA SSD and HDD) using
+SMART data from smartmontools.
+
+Adds a "Disk Health" dashboard widget showing, per disk, the overall SMART
+verdict, a color coded temperature bar, wear, total data written, bad blocks,
+error counters and power-on time. The widget turns red when a disk reports
+errors. Collection interval, monitored disks, temperature unit and limits
+(globally or per disk) and alerting are configured under Services > Disk
+Health; the widget picks which of those disks and which details to show.
+
+Raises a system alert (header status bell) and logs to syslog when a disk is
+failing, degrading or too hot.
+
+Requires the os-smart plugin, which is installed automatically.
+
+WWW: https://github.com/priestjim/opnsense-os-diskhealth
+
+1.0.0
+
+* Add: Disk Health dashboard widget with temperature bars, health colouring and per-widget options
+* Add: System status alert and syslog messages for failing or too hot disks
+* Add: Services > Disk Health settings page (interval, monitored disks with a detected disk picker, temperature unit and limits globally or per disk, alerting)
+* Add: Background SMART collector that never wakes sleeping disks
+* Add: Registers with the firmware page on install
+* Add: settings changes apply to the widget and the status bell right away

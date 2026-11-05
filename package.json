@@ -1,0 +1,11 @@
+{
+  "name": "opnsense-diskhealth",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:js && npm run test:py",
+    "test:js": "node --test \"tests/*.test.mjs\"",
+    "test:py": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/py"
+  }
+}

@@ -1,0 +1,8 @@
+echo "Unregistering the plugin from the firmware page"
+/usr/local/opnsense/scripts/firmware/register.php remove os-diskhealth || true
+echo "Removing disk health data"
+rm -rf /var/run/diskhealth
+echo "Unregistering the disk health cron job"
+/usr/local/sbin/configctl -d cron restart || true
+echo "Removing the rendered disk health configuration"
+rm -f /usr/local/etc/diskhealth.conf

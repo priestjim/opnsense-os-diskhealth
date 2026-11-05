@@ -1,0 +1,15 @@
+<acl>
+    <page-dashboard-diskhealth>
+        <name>Dashboard: Disk Health widget</name>
+        <patterns>
+            <pattern>api/diskhealth/service/status</pattern>
+        </patterns>
+    </page-dashboard-diskhealth>
+    <page-services-diskhealth>
+        <name>Services: Disk Health</name>
+        <patterns>
+            <pattern>ui/diskhealth/*</pattern>
+            <pattern>api/diskhealth/*</pattern>
+        </patterns>
+    </page-services-diskhealth>
+</acl>
