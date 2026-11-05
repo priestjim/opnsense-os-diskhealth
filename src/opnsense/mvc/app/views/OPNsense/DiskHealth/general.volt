@@ -69,7 +69,8 @@ POSSIBILITY OF SUCH DAMAGE.
             lockDisksOnUnitChange();
         });
 
-        const $grid = $("#{{ formGridDisk['table_id'] }}");
+        /* UIBootgrid replaces the table element: look the grid up when it is used, never keep a reference */
+        const grid = () => $("#{{ formGridDisk['table_id'] }}");
 
         /* names of the detected disks; the dialog reuses the last scan, the add button always scans again */
         let detected = null;
@@ -106,7 +107,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     const missing = disks.filter((name) => !known.includes(name));
                     const next = function() {
                         if (missing.length === 0) {
-                            $grid.bootgrid('reload');
+                            grid().bootgrid('reload');
                             return;
                         }
                         ajaxCall("/api/diskhealth/general/add_disk/", {disk: {enabled: '1', device: missing.shift()}}, next);
@@ -116,7 +117,7 @@ POSSIBILITY OF SUCH DAMAGE.
             }, true);
         });
 
-        $grid.UIBootgrid({
+        grid().UIBootgrid({
             search: '/api/diskhealth/general/search_disk',
             get: '/api/diskhealth/general/get_disk/',
             set: '/api/diskhealth/general/set_disk/',
@@ -160,7 +161,7 @@ POSSIBILITY OF SUCH DAMAGE.
                 /* a changed unit converts the per-disk limits on the server */
                 savedUnit = $('#general\\.temp_unit').val();
                 lockDisksOnUnitChange();
-                $grid.bootgrid('reload');
+                grid().bootgrid('reload');
                 $("#saveAct_progress").addClass("fa fa-spinner fa-pulse");
                 ajaxCall("/api/diskhealth/service/reconfigure", {}, function() {
                     $("#saveAct_progress").removeClass("fa fa-spinner fa-pulse");
