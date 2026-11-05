@@ -31,3 +31,7 @@ WWW: https://github.com/priestjim/opnsense-os-diskhealth
 * Fix: the cache directory is readable by the web UI under any umask
 * Fix: the detected disks list in the disk dialog recovers after a failed scan
 * Change: easier installation with a published repository definition
+
+1.0.2
+
+* Fix: the disk list on the settings page refreshes after "Add detected disks" and after saving

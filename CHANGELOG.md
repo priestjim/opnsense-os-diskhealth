@@ -2,6 +2,11 @@
 
 All notable changes are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.2]
+
+### Fixed
+- The *Add detected disks* button added the disks but the table on the settings page only showed them after a page refresh (the same stale reference also affected the reload after saving).
+
 ## [1.0.1]
 
 ### Changed
