@@ -2,6 +2,19 @@
 
 All notable changes are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.1]
+
+### Changed
+- Easier installation: the release now publishes a ready-made repository definition (`diskhealth.conf`) next to the signing key (`repo.pub`). Installing is two `fetch` commands and `pkg update`, after which the plugin can be installed from System ▸ Firmware ▸ Plugins (see the README).
+
+### Fixed
+- A disk that could not be read for a moment (health status "unknown") was logged as "recovered" and, when it came back still failing, announced a second time. The last real health status is now kept across failed reads.
+- A hot disk that went to sleep and woke up still hot was announced again, and one that woke up cool never got its "recovered" line. The last temperature status is now kept across standby.
+- The cache directory could be created unreadable for the web UI under a strict umask, which left the widget on "Collecting" and the status bell silent.
+- The disk dialog's list of detected disks stayed empty for the rest of the page visit after one failed scan.
+- No device scan is run on every collection any more while no disk is monitored.
+- The README no longer suggests data appears by itself after installation (disks have to be added first).
+
 ## [1.0.0]
 
 ### Added

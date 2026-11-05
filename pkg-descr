@@ -23,3 +23,11 @@ WWW: https://github.com/priestjim/opnsense-os-diskhealth
 * Add: Background SMART collector that never wakes sleeping disks
 * Add: Registers with the firmware page on install
 * Add: settings changes apply to the widget and the status bell right away
+
+1.0.1
+
+* Fix: a failed SMART read no longer logs a false "recovered" or a second critical alert for the same disk
+* Fix: a hot disk waking up from standby is not announced twice, a cool one is announced as recovered
+* Fix: the cache directory is readable by the web UI under any umask
+* Fix: the detected disks list in the disk dialog recovers after a failed scan
+* Change: easier installation with a published repository definition

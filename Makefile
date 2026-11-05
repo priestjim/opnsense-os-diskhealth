@@ -1,5 +1,5 @@
 PLUGIN_NAME=				diskhealth
-PLUGIN_VERSION=			1.0.0
+PLUGIN_VERSION=			1.0.1
 PLUGIN_COMMENT=			SMART disk health dashboard widget and system alerts
 PLUGIN_DEPENDS=			os-smart
 PLUGIN_NO_ABI=			yes
